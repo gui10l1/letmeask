@@ -6,7 +6,7 @@ import { Container } from './styles';
 interface IButton extends ButtonHTMLAttributes<HTMLButtonElement> {
   icon?: ComponentType<IconBaseProps>;
   img?: string;
-  backgroundColor: string;
+  styleType?: 'danger' | 'success';
 }
 
 const Button: FC<IButton> = ({ icon: Icon, img, children, ...rest }) => {

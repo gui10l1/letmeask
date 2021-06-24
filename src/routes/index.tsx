@@ -3,6 +3,7 @@ import { Route, Switch } from 'react-router-dom';
 
 import { CreateRoom } from '../pages/CreateRoom';
 import { Home } from '../pages/Home';
+import { Room } from '../pages/Room';
 
 const Routes: FC = () => {
   return (
@@ -10,6 +11,8 @@ const Routes: FC = () => {
       <Route path="/" exact component={Home} />
 
       <Route path="/rooms/new" component={CreateRoom} />
+
+      <Route path="/rooms/:roomId" component={Room} />
     </Switch>
   );
 };

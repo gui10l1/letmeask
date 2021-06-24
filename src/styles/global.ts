@@ -15,9 +15,9 @@ export default createGlobalStyle`
     --pink-dark: #E559F9;
     --pink-light: #D67EE2;
     --purple-hover: #6F4BD8;
-    --purple-danger: #D73754;
-    --purple-gray-medium: #7E7E86;
-    --purple-gray-light: #CECECE;
+    --danger-hover: #D73754;
+    --gray-medium-hover: #7E7E86;
+    --gray-light-hover: #CECECE;
   }
 
   * {
@@ -27,7 +27,11 @@ export default createGlobalStyle`
     outline: 0;
   }
 
-  body, input {
+  body {
+    background-color: var(--background-white);
+  }
+
+  body, input, textarea {
     font-family: 'Roboto', sans-serif;
     font-weight: 400;
   }
@@ -42,5 +46,8 @@ export default createGlobalStyle`
     font-weight: 500;
 
     cursor: pointer;
+
+    border: 0;
+    background-color: transparent;
   }
 `;

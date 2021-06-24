@@ -1,13 +1,29 @@
 import styled, { css } from 'styled-components';
 
 interface IContainer {
-  backgroundColor: string;
+  styleType?: 'danger' | 'success';
 }
+
+const buttonStyleTypes = {
+  danger: css`
+    background-color: var(--danger);
+
+    &:hover {
+      background-color: var(--danger-hover);
+    }
+  `,
+  success: css`
+    background-color: var(--purple);
+
+    &:hover {
+      background-color: var(--purple-hover);
+    }
+  `,
+};
 
 export const Container = styled.button<IContainer>`
   height: 50px;
   max-width: 320px;
-  width: 100%;
 
   display: flex;
   align-items: center;
@@ -19,11 +35,19 @@ export const Container = styled.button<IContainer>`
   border: 0;
   border-radius: 8px;
 
-  margin-bottom: 32px;
+  transition: background-color 0.2s;
+
+  ${props => props.styleType && buttonStyleTypes[props.styleType]}
 
   ${props =>
+    props.disabled &&
     css`
-      background-color: ${props.backgroundColor};
+      opacity: 0.5;
+      cursor: not-allowed;
+
+      &:hover {
+        background-color: var(--purple);
+      }
     `}
 
   > img {
