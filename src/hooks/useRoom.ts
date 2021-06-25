@@ -9,7 +9,7 @@ interface IQuestion {
     authorName: string;
   };
   content: string;
-  isAnswred: boolean;
+  isAnswered: boolean;
   isHighlighted: boolean;
   likes: {
     key: string;
@@ -24,7 +24,7 @@ interface IFirebaseQuestionContent {
     authorId: string;
   };
   content: string;
-  isAnswred: boolean;
+  isAnswered: boolean;
   isHighlighted: boolean;
   likes: {
     [key: string]: {
@@ -56,7 +56,7 @@ export function useRoom(roomId: string): IUseRoom {
             key,
             author: parsedContent.author,
             content: parsedContent.content,
-            isAnswred: parsedContent.isAnswred,
+            isAnswered: parsedContent.isAnswered,
             isHighlighted: parsedContent.isHighlighted,
             likes: Object.entries(parsedContent.likes ?? {}).map(
               ([id, like]) => ({

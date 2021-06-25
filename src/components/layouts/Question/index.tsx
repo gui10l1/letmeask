@@ -12,7 +12,7 @@ interface IQuestion {
   authorAvatar: string;
   authorName: string;
   content: ReactNode;
-  isHighlighed?: boolean;
+  isHighlighted?: boolean;
   isAnswered?: boolean;
 }
 
@@ -20,12 +20,12 @@ const Question: FC<IQuestion> = ({
   authorAvatar,
   authorName,
   isAnswered,
-  isHighlighed,
+  isHighlighted,
   children,
   content,
 }) => {
   return (
-    <Container isHighlighed={isHighlighed} isAnswered={isAnswered}>
+    <Container isHighlighed={isHighlighted} isAnswered={isAnswered}>
       <Content>
         <p>{content}</p>
       </Content>

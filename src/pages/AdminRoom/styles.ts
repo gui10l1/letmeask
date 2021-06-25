@@ -39,6 +39,14 @@ export const Content = styled.div``;
 
 export const Button = styled(ButtonComponent)`
   height: auto;
+
+  &:disabled {
+    color: #aaa;
+
+    &:hover {
+      background-color: transparent;
+    }
+  }
 `;
 
 export const EmptyQuestions = styled.div`
