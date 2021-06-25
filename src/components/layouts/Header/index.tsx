@@ -1,7 +1,9 @@
 import { FC, useCallback } from 'react';
 import { FiCopy } from 'react-icons/fi';
+import { useHistory, useRouteMatch } from 'react-router-dom';
 
 import logo from '../../../assets/images/logo.svg';
+import { database } from '../../../services/firebase';
 import {
   Container,
   ButtonWrapper,
@@ -14,10 +16,27 @@ interface IHeader {
   isAdmin: boolean;
 }
 
+interface IParams {
+  roomId: string;
+}
+
 const Header: FC<IHeader> = ({ isAdmin, code }) => {
+  const { params } = useRouteMatch<IParams>();
+  const { push } = useHistory();
+
   const handleCopyCode = useCallback(() => {
     navigator.clipboard.writeText(code);
   }, [code]);
+
+  const handleDeleteRoom = useCallback(async () => {
+    if (params.roomId) {
+      await database.ref(`rooms/${params.roomId}`).update({
+        endedAt: new Date(),
+      });
+
+      push('/');
+    }
+  }, [params.roomId, push]);
 
   return (
     <Container>
@@ -32,7 +51,11 @@ const Header: FC<IHeader> = ({ isAdmin, code }) => {
           <span>Sala {code}</span>
         </CodeButton>
 
-        {isAdmin && <FinishRoomButton>Finalizar sala</FinishRoomButton>}
+        {isAdmin && (
+          <FinishRoomButton onClick={handleDeleteRoom}>
+            Finalizar sala
+          </FinishRoomButton>
+        )}
       </ButtonWrapper>
     </Container>
   );

@@ -37,73 +37,40 @@ export const ContainerHeader = styled.div`
 
 export const Content = styled.div``;
 
-export const Question = styled.div`
-  background-color: var(--details-white);
-
-  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.04);
-
-  border-radius: 8px;
-
-  padding: 24px;
-
-  & + div {
-    margin-top: 8px;
-  }
-`;
-
-export const QuestionContent = styled.div`
-  margin-bottom: 24px;
-
-  > p {
-    color: var(--black);
-
-    font-size: 16px;
-
-    line-height: 24px;
-  }
-`;
-
-export const QuestionFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-export const UserWhoDidQuestion = styled.div`
-  display: flex;
-  align-items: center;
-
-  > div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 32px;
-    height: 32px;
-
-    margin-right: 8px;
-    padding: 8.5px;
-
-    border-radius: 50%;
-
-    background-color: var(--purple);
-
-    > svg {
-      color: #fff;
-    }
-  }
-
-  > span {
-    color: var(--gray-dark);
-  }
-`;
-
-export const Actions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-`;
-
 export const Button = styled(ButtonComponent)`
   height: auto;
+`;
+
+export const EmptyQuestions = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  margin-top: 164px;
+
+  > img {
+    margin-bottom: 16px;
+
+    max-width: 100%;
+    height: auto;
+  }
+
+  > h1 {
+    font-weight: 600;
+
+    font-size: 18px;
+
+    color: var(--black);
+  }
+
+  > p {
+    max-width: 284px;
+    width: 100%;
+
+    text-align: center;
+
+    color: var(--gray-dark);
+
+    margin-top: 8px;
+  }
 `;

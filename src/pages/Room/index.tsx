@@ -1,42 +1,27 @@
 import { Form } from '@unform/web';
-import { FC, useCallback, useEffect, useState } from 'react';
-import { FiUser } from 'react-icons/fi';
+import { FC, useCallback } from 'react';
 import { useRouteMatch } from 'react-router-dom';
 
 import { Textarea } from '../../components/elements/Form/Textarea';
 import { Header } from '../../components/layouts/Header';
 import { Button as ButtonComponent } from '../../components/elements/Button';
+import { useAuth } from '../../hooks/useAuth';
+import { database } from '../../services/firebase';
+import { Question } from '../../components/layouts/Question';
 import {
   Container,
   ContainerHeader,
   Content,
   UnloggedUser,
-  Question,
-  QuestionContent,
-  QuestionFooter,
-  UserWhoDidQuestion,
-  Actions,
+  EmptyQuestions,
   Button,
 } from './styles';
+import { useRoom } from '../../hooks/useRoom';
 import likeIcon from '../../assets/images/like.svg';
-import { useAuth } from '../../hooks/useAuth';
-
-import { database } from '../../services/firebase';
+import emptyQuestions from '../../assets/images/empty-questions.svg';
 
 interface IParams {
   roomId: string;
-}
-
-interface IQuestion {
-  key: string;
-  author: {
-    authorAvatar: string;
-    authorId: string;
-    authorName: string;
-  };
-  content: string;
-  isAnswred: boolean;
-  isHighlighted: boolean;
 }
 
 interface IFormData {
@@ -46,31 +31,7 @@ interface IFormData {
 const Room: FC = () => {
   const { params } = useRouteMatch<IParams>();
   const { user } = useAuth();
-
-  const [questions, setQuestions] = useState<IQuestion[]>([]);
-
-  useEffect(() => {
-    const roomRef = database.ref(`rooms/${params.roomId}`);
-
-    roomRef.once('value', room => {
-      if (!room.val().questions) {
-        return;
-      }
-
-      const parsedQuestions = Object.entries(room.val().questions).map(
-        ([key, content]) => {
-          const parsedContent = content as IQuestion;
-
-          return {
-            ...parsedContent,
-            key,
-          };
-        },
-      );
-
-      setQuestions(parsedQuestions);
-    });
-  }, [params.roomId]);
+  const { questions } = useRoom(params.roomId);
 
   const handleAddNewQuestion = useCallback(
     async (data: IFormData, { reset }) => {
@@ -94,25 +55,23 @@ const Room: FC = () => {
       };
 
       await database.ref(`rooms/${params.roomId}/questions`).push(question);
-      const questionsFromDatabase = await database
-        .ref(`rooms/${params.roomId}/questions`)
-        .get();
 
-      const parsedQuestions = Object.entries(questionsFromDatabase.val()).map(
-        ([key, content]) => {
-          const questionContent = content as IQuestion;
-
-          return {
-            ...questionContent,
-            key,
-          };
-        },
-      );
-
-      setQuestions(parsedQuestions);
       reset();
     },
     [user, params.roomId],
+  );
+
+  const handleLikeQuestion = useCallback(
+    async (questionId: string, hasLiked: boolean) => {
+      if (!hasLiked) {
+        await database
+          .ref(`rooms/${params.roomId}/questions/${questionId}/likes`)
+          .push({
+            authorId: user.id,
+          });
+      }
+    },
+    [params.roomId, user.id],
   );
 
   return (
@@ -121,7 +80,7 @@ const Room: FC = () => {
 
       <Container>
         <ContainerHeader>
-          <h1>Sala React Q&A</h1>
+          <h1>Nome da sala</h1>
 
           <span>{questions.length} perguntas</span>
         </ContainerHeader>
@@ -133,7 +92,7 @@ const Room: FC = () => {
               placeholder="O que você quer perguntar?"
             />
 
-            <UnloggedUser isHidden={!!user}>
+            <UnloggedUser>
               {!user && (
                 <span>
                   Para enviar uma pergunta,&nbsp;
@@ -159,29 +118,43 @@ const Room: FC = () => {
             </UnloggedUser>
           </Form>
 
-          {questions.map(item => (
-            <Question key={item.key}>
-              <QuestionContent>
-                <p>{item.content}</p>
-              </QuestionContent>
+          {questions.length === 0 && (
+            <EmptyQuestions>
+              <img src={emptyQuestions} alt="No questions here" />
 
-              <QuestionFooter>
-                <UserWhoDidQuestion>
-                  <div>
-                    <FiUser size={22} />
-                  </div>
+              <h1>Nenhuma pergunta por aqui...</h1>
 
-                  <span>{item.author.authorName}</span>
-                </UserWhoDidQuestion>
+              {!user ? (
+                <p>
+                  Faça o seu login e seja a primeira pessoa a fazer uma
+                  pergunta!
+                </p>
+              ) : (
+                <p>Seja a primeira pessoa a fazer uma pergunta!</p>
+              )}
+            </EmptyQuestions>
+          )}
 
-                <Actions>
-                  <span>16</span>
-
-                  <Button img={likeIcon} />
-                </Actions>
-              </QuestionFooter>
-            </Question>
-          ))}
+          {questions.length !== 0 &&
+            questions.map(item => (
+              <Question
+                authorAvatar={item.author.authorAvatar}
+                authorName={item.author.authorName}
+                key={item.key}
+                content={item.content}
+              >
+                <span>{item.likes.length}</span>
+                <Button
+                  img={likeIcon}
+                  onClick={() =>
+                    handleLikeQuestion(
+                      item.key,
+                      item.likes.some(like => like.authorId === user.id),
+                    )
+                  }
+                />
+              </Question>
+            ))}
         </Content>
       </Container>
     </>

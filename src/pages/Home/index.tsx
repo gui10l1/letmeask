@@ -44,6 +44,10 @@ const Home: FC = () => {
         return;
       }
 
+      if (getRoom.val().endedAt) {
+        return;
+      }
+
       push(`/rooms/${getRoom.key}`);
     },
     [push],

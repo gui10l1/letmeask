@@ -1,10 +1,6 @@
-import styled, { css } from 'styled-components';
+import styled from 'styled-components';
 
 import { Button as ButtonComponent } from '../../components/elements/Button';
-
-interface IUnloggedUser {
-  isHidden: boolean;
-}
 
 export const Container = styled.main`
   max-width: 800px;
@@ -41,7 +37,7 @@ export const ContainerHeader = styled.div`
 
 export const Content = styled.div``;
 
-export const UnloggedUser = styled.div<IUnloggedUser>`
+export const UnloggedUser = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -55,12 +51,6 @@ export const UnloggedUser = styled.div<IUnloggedUser>`
     color: var(--gray-dark);
 
     font-weight: 500;
-
-    ${props =>
-      !props.isHidden &&
-      css`
-        display: flex;
-      `}
 
     > a {
       color: var(--purple);
@@ -82,87 +72,37 @@ export const UnloggedUser = styled.div<IUnloggedUser>`
       height: 35px;
     }
   }
-
-  > button {
-    ${props =>
-      props.isHidden &&
-      css`
-        margin-left: auto;
-      `}
-  }
 `;
 
-export const Question = styled.div`
-  background-color: var(--details-white);
+export const EmptyQuestions = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-  box-shadow: 0px 2px 12px rgba(0, 0, 0, 0.04);
+  > img {
+    margin-bottom: 16px;
 
-  border-radius: 8px;
-
-  padding: 24px;
-
-  & + div {
-    margin-top: 8px;
+    max-width: 100%;
+    height: auto;
   }
-`;
 
-export const QuestionContent = styled.div`
-  margin-bottom: 24px;
+  > h1 {
+    font-weight: 600;
+
+    font-size: 18px;
+
+    color: var(--black);
+  }
 
   > p {
-    color: var(--black);
+    max-width: 284px;
+    width: 100%;
 
-    font-size: 16px;
-
-    line-height: 24px;
-  }
-`;
-
-export const QuestionFooter = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-`;
-
-export const UserWhoDidQuestion = styled.div`
-  display: flex;
-  align-items: center;
-
-  > div {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 32px;
-    height: 32px;
-
-    margin-right: 8px;
-    padding: 8.5px;
-
-    border-radius: 50%;
-
-    background-color: var(--purple);
-
-    > svg {
-      color: #fff;
-    }
-  }
-
-  > span {
-    color: var(--gray-dark);
-  }
-`;
-
-export const Actions = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 8px;
-
-  > span {
-    font-family: 'Poppins';
-    font-size: 16px;
+    text-align: center;
 
     color: var(--gray-dark);
+
+    margin-top: 8px;
   }
 `;
 
