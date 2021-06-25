@@ -35,10 +35,12 @@ interface IFirebaseQuestionContent {
 
 interface IUseRoom {
   questions: IQuestion[];
+  loading: boolean;
 }
 
 export function useRoom(roomId: string): IUseRoom {
   const [questions, setQuestions] = useState<IQuestion[]>([]);
+  const [loading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const roomRef = database.ref(`rooms/${roomId}`);
@@ -69,6 +71,7 @@ export function useRoom(roomId: string): IUseRoom {
       );
 
       setQuestions(parsedQuestions);
+      setIsLoading(false);
     });
 
     return () => {
@@ -78,5 +81,6 @@ export function useRoom(roomId: string): IUseRoom {
 
   return {
     questions,
+    loading,
   };
 }

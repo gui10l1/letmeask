@@ -32,7 +32,7 @@ const Home: FC = () => {
     push('/rooms/new');
   }, [push, signIn, user]);
 
-  const handleEnterInANewRoom = useCallback(
+  const handleEnterInARoom = useCallback(
     async (data: IFormData) => {
       if (data.roomCode.trim() === '') {
         return;
@@ -47,6 +47,8 @@ const Home: FC = () => {
       if (getRoom.val().endedAt) {
         return;
       }
+
+      localStorage.setItem('@LetMeAsk:RoomData', data.roomCode);
 
       push(`/rooms/${getRoom.key}`);
     },
@@ -82,7 +84,7 @@ const Home: FC = () => {
           <span />
         </div>
 
-        <Form onSubmit={handleEnterInANewRoom}>
+        <Form onSubmit={handleEnterInARoom}>
           <Input name="roomCode" placeholder="Digite o código da sala" />
 
           <Button styleType="success" type="submit" icon={FiLogIn}>

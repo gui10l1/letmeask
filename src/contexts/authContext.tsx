@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback, FC } from 'react';
-
 import { createContext } from 'use-context-selector';
+import { useHistory } from 'react-router-dom';
 
 import { firebase, auth } from '../services/firebase';
 
@@ -19,6 +19,8 @@ export const AuthContext = createContext({} as IAuthContext);
 
 const AuthContextProvider: FC = ({ children }) => {
   const [user, setUser] = useState<IUser>({} as IUser);
+
+  const { push } = useHistory();
 
   useEffect(() => {
     const unsubscribeListener = auth.onAuthStateChanged(userFromState => {
@@ -40,7 +42,7 @@ const AuthContextProvider: FC = ({ children }) => {
     return () => {
       unsubscribeListener();
     };
-  }, []);
+  }, [push]);
 
   const signIn = useCallback(async () => {
     const service = new firebase.auth.GoogleAuthProvider();

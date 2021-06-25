@@ -1,10 +1,20 @@
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 
-import { Button as ButtonComponent } from '../../components/elements/Button';
+interface IContainer {
+  isLoading: boolean;
+}
 
-export const Container = styled.main`
+export const Container = styled.main<IContainer>`
   max-width: 800px;
   margin: 0 auto;
+
+  ${props =>
+    props.isLoading &&
+    css`
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `}
 `;
 
 export const ContainerHeader = styled.div`
@@ -36,18 +46,6 @@ export const ContainerHeader = styled.div`
 `;
 
 export const Content = styled.div``;
-
-export const Button = styled(ButtonComponent)`
-  height: auto;
-
-  &:disabled {
-    color: #aaa;
-
-    &:hover {
-      background-color: transparent;
-    }
-  }
-`;
 
 export const EmptyQuestions = styled.div`
   display: flex;

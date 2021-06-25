@@ -1,22 +1,15 @@
-import { FC, useCallback, useEffect, useState } from 'react';
-import { useHistory, useRouteMatch } from 'react-router-dom';
-import { Header } from '../../components/layouts/Header';
+/* eslint-disable no-alert */
+import { FC, useCallback } from 'react';
+import { useRouteMatch } from 'react-router-dom';
+import { FiCheckCircle, FiTrash2, FiMessageCircle } from 'react-icons/fi';
+import Loader from 'react-loader-spinner';
 
-import {
-  Container,
-  ContainerHeader,
-  Content,
-  Button,
-  EmptyQuestions,
-} from './styles';
-import answerIcon from '../../assets/images/answer.svg';
-import checkIcon from '../../assets/images/check.svg';
-import deleteIcon from '../../assets/images/delete.svg';
-import emptyQuestions from '../../assets/images/empty-questions.svg';
+import { Header } from '../../components/layouts/Header';
+import { Container, ContainerHeader, Content, EmptyQuestions } from './styles';
 import { Question } from '../../components/layouts/Question';
 import { useRoom } from '../../hooks/useRoom';
 import { database } from '../../services/firebase';
-import { useAuth } from '../../hooks/useAuth';
+import emptyQuestions from '../../assets/images/empty-questions.svg';
 
 interface IParams {
   roomId: string;
@@ -24,27 +17,7 @@ interface IParams {
 
 const AdminRoom: FC = () => {
   const { params } = useRouteMatch<IParams>();
-  const { questions } = useRoom(params.roomId);
-  const { user } = useAuth();
-  const { push } = useHistory();
-
-  const [isAdmin, setIsAdmin] = useState(false);
-
-  useEffect(() => {
-    async function checkPermissions() {
-      const roomRef = await database.ref(`rooms/${params.roomId}`).get();
-
-      const { authorId } = roomRef.val();
-
-      if (authorId !== user.id) {
-        setIsAdmin(false);
-      } else {
-        setIsAdmin(true);
-      }
-    }
-
-    checkPermissions();
-  }, [params.roomId, push, user.id]);
+  const { questions, loading } = useRoom(params.roomId);
 
   const handleDeleteQuestion = useCallback(
     async (questionId: string) => {
@@ -92,8 +65,10 @@ const AdminRoom: FC = () => {
     <>
       <Header isAdmin code={params.roomId} />
 
-      <Container>
-        {isAdmin ? (
+      <Container isLoading={loading}>
+        {loading ? (
+          <Loader type="TailSpin" width={100} height={100} color="#835AFD" />
+        ) : (
           <>
             <ContainerHeader>
               <h1>Sala React Q&A</h1>
@@ -112,19 +87,25 @@ const AdminRoom: FC = () => {
                     isHighlighted={item.isHighlighted}
                     isAnswered={item.isAnswered}
                   >
-                    <Button
-                      img={checkIcon}
+                    <FiCheckCircle
+                      size={22}
+                      color={item.isAnswered ? '#835AFD' : '#ccc'}
                       onClick={() => handleAnswerQuestion(item.key)}
                     />
 
-                    <Button
-                      img={answerIcon}
-                      onClick={() => handleHighlightQuestion(item.key)}
-                      disabled={item.isAnswered}
+                    <FiMessageCircle
+                      size={22}
+                      color={item.isHighlighted ? '#835AFD' : '#ccc'}
+                      onClick={
+                        !item.isAnswered
+                          ? () => handleHighlightQuestion(item.key)
+                          : undefined
+                      }
                     />
 
-                    <Button
-                      img={deleteIcon}
+                    <FiTrash2
+                      size={22}
+                      color="#ccc"
                       onClick={() => handleDeleteQuestion(item.key)}
                     />
                   </Question>
@@ -141,8 +122,6 @@ const AdminRoom: FC = () => {
               )}
             </Content>
           </>
-        ) : (
-          <span>Você não é admin desta sala!</span>
         )}
       </Container>
     </>

@@ -1,10 +1,12 @@
 import { Form } from '@unform/web';
 import { FC, useCallback } from 'react';
 import { useRouteMatch } from 'react-router-dom';
+import { FiThumbsUp } from 'react-icons/fi';
+import Loader from 'react-loader-spinner';
 
 import { Textarea } from '../../components/elements/Form/Textarea';
 import { Header } from '../../components/layouts/Header';
-import { Button as ButtonComponent } from '../../components/elements/Button';
+import { Button } from '../../components/elements/Button';
 import { useAuth } from '../../hooks/useAuth';
 import { database } from '../../services/firebase';
 import { Question } from '../../components/layouts/Question';
@@ -14,10 +16,8 @@ import {
   Content,
   UnloggedUser,
   EmptyQuestions,
-  Button,
 } from './styles';
 import { useRoom } from '../../hooks/useRoom';
-import likeIcon from '../../assets/images/like.svg';
 import emptyQuestions from '../../assets/images/empty-questions.svg';
 
 interface IParams {
@@ -31,7 +31,7 @@ interface IFormData {
 const Room: FC = () => {
   const { params } = useRouteMatch<IParams>();
   const { user } = useAuth();
-  const { questions } = useRoom(params.roomId);
+  const { questions, loading } = useRoom(params.roomId);
 
   const handleAddNewQuestion = useCallback(
     async (data: IFormData, { reset }) => {
@@ -78,84 +78,102 @@ const Room: FC = () => {
     <>
       <Header isAdmin={false} code={params.roomId} />
 
-      <Container>
-        <ContainerHeader>
-          <h1>Nome da sala</h1>
+      <Container isLoading={loading}>
+        {loading ? (
+          <Loader type="TailSpin" color="#835AFD" width={100} height={100} />
+        ) : (
+          <>
+            <ContainerHeader>
+              <h1>Nome da sala</h1>
 
-          <span>{questions.length} perguntas</span>
-        </ContainerHeader>
+              <span>{questions.length} perguntas</span>
+            </ContainerHeader>
 
-        <Content>
-          <Form onSubmit={handleAddNewQuestion}>
-            <Textarea
-              name="questionContent"
-              placeholder="O que você quer perguntar?"
-            />
-
-            <UnloggedUser>
-              {!user && (
-                <span>
-                  Para enviar uma pergunta,&nbsp;
-                  <a href="/teste">faça seu login.</a>
-                </span>
-              )}
-
-              {user && (
-                <div>
-                  <img src={user.avatar} alt={user.name} />
-
-                  <span>{user.name}</span>
-                </div>
-              )}
-
-              <ButtonComponent
-                style={{ width: '100%', maxWidth: 177 }}
-                styleType="success"
-                disabled={!user}
-              >
-                Enviar
-              </ButtonComponent>
-            </UnloggedUser>
-          </Form>
-
-          {questions.length === 0 && (
-            <EmptyQuestions>
-              <img src={emptyQuestions} alt="No questions here" />
-
-              <h1>Nenhuma pergunta por aqui...</h1>
-
-              {!user ? (
-                <p>
-                  Faça o seu login e seja a primeira pessoa a fazer uma
-                  pergunta!
-                </p>
-              ) : (
-                <p>Seja a primeira pessoa a fazer uma pergunta!</p>
-              )}
-            </EmptyQuestions>
-          )}
-
-          {questions.length !== 0 &&
-            questions.map(item => (
-              <Question
-                authorAvatar={item.author.authorAvatar}
-                authorName={item.author.authorName}
-                key={item.key}
-                content={item.content}
-              >
-                <span>{item.likes.length}</span>
-                <Button
-                  img={likeIcon}
-                  onClick={() =>
-                    handleLikeQuestion(
-                      item.key,
-                      item.likes.some(like => like.authorId === user.id),
-                    )
-                  }
+            <Content>
+              <Form onSubmit={handleAddNewQuestion}>
+                <Textarea
+                  name="questionContent"
+                  placeholder="O que você quer perguntar?"
                 />
-              </Question>
-            ))}
-        </Content>
+
+                <UnloggedUser>
+                  {!user && (
+                    <span>
+                      Para enviar uma pergunta,&nbsp;
+                      <a href="/teste">faça seu login.</a>
+                    </span>
+                  )}
+
+                  {user && (
+                    <div>
+                      <img src={user.avatar} alt={user.name} />
+
+                      <span>{user.name}</span>
+                    </div>
+                  )}
+
+                  <Button
+                    style={{ width: '100%', maxWidth: 177 }}
+                    styleType="success"
+                    disabled={!user}
+                  >
+                    Enviar
+                  </Button>
+                </UnloggedUser>
+              </Form>
+
+              {questions.length === 0 && (
+                <EmptyQuestions>
+                  <img src={emptyQuestions} alt="No questions here" />
+
+                  <h1>Nenhuma pergunta por aqui...</h1>
+
+                  {!user ? (
+                    <p>
+                      Faça o seu login e seja a primeira pessoa a fazer uma
+                      pergunta!
+                    </p>
+                  ) : (
+                    <p>Seja a primeira pessoa a fazer uma pergunta!</p>
+                  )}
+                </EmptyQuestions>
+              )}
+
+              {questions.length !== 0 &&
+                questions.map(item => (
+                  <Question
+                    authorAvatar={item.author.authorAvatar}
+                    authorName={item.author.authorName}
+                    key={item.key}
+                    content={item.content}
+                    isAnswered={item.isAnswered}
+                    isHighlighted={item.isHighlighted}
+                  >
+                    <span>{item.likes.length}</span>
+                    <FiThumbsUp
+                      size={22}
+                      color={
+                        item.likes.some(like => like.authorId === user.id)
+                          ? '#835AFD'
+                          : '#ccc'
+                      }
+                      onClick={
+                        item.isAnswered
+                          ? undefined
+                          : () =>
+                              handleLikeQuestion(
+                                item.key,
+                                item.likes.some(
+                                  like => like.authorId === user.id,
+                                ),
+                              )
+                      }
+                    />
+                  </Question>
+                ))}
+            </Content>
+          </>
+        )}
       </Container>
     </>
   );

@@ -74,13 +74,17 @@ export const UserWhoDidQuestion = styled.div`
 export const Actions = styled.div`
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
 
   > span {
     font-family: 'Poppins';
     font-size: 16px;
 
     color: var(--gray-dark);
+  }
+
+  > svg {
+    cursor: pointer;
   }
 `;
 
